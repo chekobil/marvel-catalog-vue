@@ -5,14 +5,22 @@
         </div>
         <div class="comic-detail-content">
         <b>{{ comic.title }}</b>
-        {{ comic.pageCount }} pags.
-        <button @click="handleGoToMarvelPage">Link to Marvel page</button>
+        <div v-if="comic.description">{{ comic.description }}</div>
+
+        <div v-if="comic.characters?.items?.length">
+            <h3>Characters</h3>
+            <div v-for="character in comic.characters.items" :keys="character.name">
+                <b>{{ character.name }}</b>
+            </div>
+        </div>
+
         <div v-if="comic.creators?.items?.length">
+            <h3>Creators</h3>
             <div v-for="creator in comic.creators.items" :keys="creator.name">
                 <b>{{ creator.name }}</b> <small>{{ creator.role }}</small>
             </div>
         </div>
-        <div v-if="comic.description">{{ comic.description }}</div>
+        <button @click="handleGoToMarvelPage">Link to Marvel page</button>
     </div>
     </div>
 </template>

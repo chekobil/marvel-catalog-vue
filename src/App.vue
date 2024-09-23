@@ -13,18 +13,22 @@ const handleGoTo = (path: string) => {
 }
 
 const handleChangeText = (text: string) => {
-  console.log("TEXT:", text, viewElement.value);
   if (viewElement.value && typeof viewElement.value.getFilteredCatalog === 'function') {
     viewElement.value.getFilteredCatalog(text)
   }
 }
+
+const handleClearSearch = () => {
+  if (searchElement.value && typeof searchElement.value.cleanSearch === 'function')
+  searchElement.value.cleanSearch()
+}
 </script>
 
 <template>
-  <span @click="handleGoTo('/')">inicio</span>
+  <button @click="handleGoTo('/')">inicio</button>
   <ComicSearch ref="searchElement" @change="handleChangeText"/>
   <RouterView v-slot="{ Component }">
-    <component ref="viewElement" :is="Component" />
+    <component ref="viewElement" :is="Component" @clear-search="handleClearSearch" />
   </RouterView>
 
 </template>

@@ -7,6 +7,9 @@
   </div>
   <div v-else>
     Catalog has {{ catalog.count }} items
+    <span v-if="searchText">filtered by "{{ searchText }}"
+      <button @click="clearSearch">Clear</button>
+    </span>
     <div class="catalog-container">
       <ComicCard v-for="comic in catalog.results" :key="comic.id" :comic />
     </div>
@@ -22,21 +25,37 @@ import ComicCard from '../components/ComicCard.vue';
 const $useAxios = useAxios()
 const catalog: Ref<Catalog> = ref({})
 const isLoading: Ref<boolean> = ref(false)
+const searchText: Ref<string> = ref('')
 
-onMounted( async () => {
-  isLoading.value = true
-  catalog.value = await getCatalog()
-  isLoading.value = false
+  const emit = defineEmits<{
+  (e: 'clear-search'): void
+}>()
+
+onMounted( () => {
+  getCatalog()
 })
+
+const clearSearch = () => {
+  searchText.value = ''
+  emit('clear-search')
+  getCatalog()
+}
 
 const getCatalog = async () => {
   const url = "/v1/public/comics"
   const res = await $useAxios(url, { params: { limit:10, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
-  return res?.data?.data ?? {} 
+  const result = res?.data?.data ?? {} 
+  isLoading.value = true
+  catalog.value = result
+  isLoading.value = false
 }
 
 const getFilteredCatalog = async (text: string) => {
-  if (!text) return
+  if (!text) {
+    getCatalog()
+    return
+  }
+  searchText.value = text
   const url = "/v1/public/comics"
   const res = await $useAxios(url, { params: { limit: 10, titleStartsWith: text }}) 
   const result = res?.data?.data ?? {} 

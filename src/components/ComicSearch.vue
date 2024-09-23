@@ -1,6 +1,6 @@
 <template>
     <div>
-        Busca por titulo de Comic: {{ searchText }}
+        Busca por titulo de Comic
         <input v-model="searchText" type="text" placeholder="comic title" @change="handleChangeSearchText">
     </div>
 </template>
