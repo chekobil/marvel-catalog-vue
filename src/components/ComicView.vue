@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import useAxios from '../composables/useAxios'
 import {useRoute} from 'vue-router'
