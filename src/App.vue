@@ -2,9 +2,12 @@
 import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
 import useAxios from './composables/useAxios'
+import ComicCard from './components/ComicCard.vue';
+
 const $useAxios = useAxios()
 const catalog: Ref<Catalog> = ref({})
-  const isLoading: Ref<boolean> = ref(false)
+const isLoading: Ref<boolean> = ref(false)
+
 onMounted( async () => {
   isLoading.value = true
   catalog.value = await getCatalog()
@@ -27,8 +30,18 @@ const getCatalog = async () => {
   </div>
   <div v-else>
     Catalog has {{ catalog.count }} items
+    <div class="catalog-container">
+      <ComicCard v-for="comic in catalog.results" :key="comic.id" :comic />
+    </div>
   </div>
 </template>
 
 <style lang="scss">
+.catalog-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+}
 </style>
