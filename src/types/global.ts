@@ -10,6 +10,7 @@ declare global {
       interface EmptyComic {
         id?: number;
         title?: string;
+        description?: string;
         pageCount?: number;
         urls?: Url[];
         characters?: Characters;

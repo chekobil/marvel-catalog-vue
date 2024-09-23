@@ -31,9 +31,24 @@ onMounted( async () => {
 
 const getCatalog = async () => {
   const url = "/v1/public/comics"
-  const res = await $useAxios(url, { params: { limit:12, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
+  const res = await $useAxios(url, { params: { limit:10, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
   return res?.data?.data ?? {} 
 }
+
+const getFilteredCatalog = async (text: string) => {
+  if (!text) return
+  const url = "/v1/public/comics"
+  const res = await $useAxios(url, { params: { limit: 10, titleStartsWith: text }}) 
+  const result = res?.data?.data ?? {} 
+  isLoading.value = true
+  catalog.value = result
+  isLoading.value = false
+}
+
+defineExpose({
+  getFilteredCatalog
+})
+
 </script>
 
 <style scoped>

@@ -7,7 +7,7 @@
         <b>{{ comic.title }}</b>
         {{ comic.pageCount }} pags.
         <button @click="handleGoToMarvelPage">Link to Marvel page</button>
-        <div v-if="comic.creators?.length">
+        <div v-if="comic.creators?.items?.length">
             <div v-for="creator in comic.creators.items" :keys="creator.name">
                 <b>{{ creator.name }}</b> <small>{{ creator.role }}</small>
             </div>
