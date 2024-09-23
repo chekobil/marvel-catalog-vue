@@ -7,6 +7,16 @@ declare global {
         results?: Comic[];
       }
       
+      interface EmptyComic {
+        id?: number;
+        title?: string;
+        pageCount?: number;
+        urls?: Url[];
+        characters?: Characters;
+        creators?: Creators;
+        images?: Image[];
+      }
+
       interface Comic {
         id: number;
         digitalId: number;
