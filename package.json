@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:rm": "rm -rf node_modules/.vite && vite",
     "dev:test": "vite --mode test",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
