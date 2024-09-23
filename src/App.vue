@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
-import useAxios from './services/useAxios'
-const $axios = useAxios()
+import useAxios from './composables/useAxios'
+const $useAxios = useAxios()
 const catalog: Ref<Catalog> = ref({})
   const isLoading: Ref<boolean> = ref(false)
 onMounted( async () => {
@@ -13,7 +13,7 @@ onMounted( async () => {
 
 const getCatalog = async () => {
   const url = "/v1/public/comics"
-  const res = await $axios(url, { params: { limit:12, orderBy: '-onsaleDate' } }) 
+  const res = await $useAxios(url, { params: { limit:12, orderBy: '-onsaleDate' } }) 
   return res?.data?.data ?? {} 
 }
 </script>
