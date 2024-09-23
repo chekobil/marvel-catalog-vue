@@ -31,7 +31,7 @@ onMounted( async () => {
 
 const getCatalog = async () => {
   const url = "/v1/public/comics"
-  const res = await $useAxios(url, { params: { limit:12, orderBy: '-onsaleDate' } }) 
+  const res = await $useAxios(url, { params: { limit:12, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
   return res?.data?.data ?? {} 
 }
 </script>

@@ -14,7 +14,7 @@ comic: Comic
 }>()
 const thumbnailUrl = computed( () => {
   if (!props.comic) return ''
-  return `${props.comic.thumbnail.path}/portrait_medium.${props.comic.thumbnail.extension}`
+  return `${props.comic.images[0].path}/portrait_incredible.${props.comic.images[0].extension}`
 })
 
 const handleNavigateToComic = () => {
@@ -28,11 +28,9 @@ const handleNavigateToComic = () => {
 .comic-card-container {
   width: 12rem;
   height: 100%;
-  border: 2px solid red;
-  border-radius: 0.8rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 2rem;
   overflow: hidden;
   img {
       width: 100%;
