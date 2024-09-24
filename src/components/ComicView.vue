@@ -4,7 +4,7 @@
             <img :src="comicImage" alt="">
         </div>
         <div class="comic-detail-content">
-        <b>{{ comic.title }}</b>
+        <h2>{{ comic.title }}</h2>
         <br>
         <br>
         <div v-if="comic.description">{{ comic.description }}</div>

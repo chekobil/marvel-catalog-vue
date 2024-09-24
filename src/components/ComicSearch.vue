@@ -81,6 +81,7 @@ defineExpose({
     padding-bottom: 1.4rem;
     border-bottom: 1px solid #cdcdcd;
     &.is-disabled {
+        display: none;
         opacity: 0.4;
         pointer-events: none;
     }

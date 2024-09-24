@@ -1,11 +1,11 @@
 <template>
-  <div v-if="isLoading">
+  <div v-if="isLoading" class="catalog-results">
     Loading ...
   </div>
-  <div v-else-if="catalog.count === 0">
+  <div v-else-if="catalog.count === 0" class="catalog-results">
     Catalog has no items with this criteria
   </div>
-  <div v-else>
+  <div v-else  class="catalog-results">
     Catalog has {{ catalog.count }} items
     <span v-if="searchText">filtered by "{{ searchText }}"
       <button @click="clearSearch">Clear</button>
@@ -13,10 +13,10 @@
     <span v-if="searchCharacter">filtered by "{{ searchCharacter }}"
       <button @click="clearSearch">Clear</button>
     </span>
-    <div class="catalog-container">
+  </div>
+  <div class="catalog-container">
       <ComicCard v-for="comic in catalog.results" :key="comic.id" :comic />
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -47,10 +47,10 @@ const clearSearch = () => {
 }
 
 const getCatalog = async () => {
+  isLoading.value = true
   const url = "/v1/public/comics"
   const res = await $useAxios(url, { params: { limit:10, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
   const result = res?.data?.data ?? {} 
-  isLoading.value = true
   catalog.value = result
   isLoading.value = false
 }
@@ -63,10 +63,10 @@ const getFilteredCatalog = async (title: string, character: number = 0) => {
   const params: ComicsParams = { limit: 10 }
   if (title) params.titleStartsWith = title
   if (character) params.characters = character
+  isLoading.value = true
   const url = "/v1/public/comics"
   const res = await $useAxios(url, { params }) 
   const result = res?.data?.data ?? {} 
-  isLoading.value = true
   catalog.value = result
   isLoading.value = false
 }
@@ -78,6 +78,14 @@ defineExpose({
 </script>
 
 <style lang="scss">
+.catalog-results {
+  box-sizing: border-box;
+  font-size: 0.8rem;
+  width: 100%;
+  padding: 0 3rem;
+  display: flex;
+  justify-content: flex-end;
+}
 .catalog-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
