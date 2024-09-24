@@ -10,12 +10,17 @@ const searchElement = useTemplateRef<searchElementType>('searchElement')
 
 const handleChangeSearch = ({text, character}: CharacterEmitData) => {
   if (viewElement.value && typeof viewElement.value.getFilteredCatalog === 'function') {
-    viewElement.value.getFilteredCatalog(text ?? '', character ?? 0)
+    viewElement.value.getFilteredCatalog(text ?? '', character ?? '')
   }
 }
 const handleClearSearch = () => {
-  if (searchElement.value && typeof searchElement.value.cleanSearch === 'function')
-  searchElement.value.cleanSearch()
+  if (searchElement.value && typeof searchElement.value.cleanSearch === 'function') {
+    searchElement.value.cleanSearch()
+  }
+  if (viewElement.value && typeof viewElement.value.clearSearch === 'function') {
+    viewElement.value.clearSearch()
+  }
+
 }
 </script>
 

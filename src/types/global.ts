@@ -16,7 +16,7 @@ declare global {
       }
 
       interface CharacterEmitData {
-        text: string, character: number
+        text: string, character: string|number
       }
       
       interface CharacterValue {

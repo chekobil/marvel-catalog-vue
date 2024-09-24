@@ -2,34 +2,32 @@
   <div v-if="isLoading" class="catalog-results">
     Loading ...
   </div>
-  <div v-else-if="catalog.results?.length === 0" class="catalog-results">
+  <div v-else-if="catalog?.length === 0" class="catalog-results">
     Catalog has no items with this criteria
   </div>
   <div v-else  class="catalog-results">
-    Catalog has {{ catalog.results?.length }} items
-    <span v-if="searchText">filtered by "{{ searchText }}"
-      <button @click="clearSearch">Clear</button>
-    </span>
-    <span v-if="searchCharacter">filtered by "{{ searchCharacter }}"
-      <button @click="clearSearch">Clear</button>
-    </span>
+    Catalog has {{ catalog?.length }} items
   </div>
   <div class="catalog-container">
-      <ComicCard v-for="comic in catalog.results" :key="comic.id" :comic />
+      <ComicCard v-for="comic in catalog" :key="comic.id" :comic />
   </div>
-  <div class="catalog-container">
-  <sl-button @click="handleGetNextPage">Load more ...</sl-button>
-</div>
+  <div v-if="!isFiltered" class="catalog-container">
+    <sl-button @click="handleGetNextPage">Load more ...</sl-button>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import useAxios from '../composables/useAxios'
 import ComicCard from '../components/ComicCard.vue';
+import { useCatalogStore } from '../stores/store'
+
+const catalogStore = useCatalogStore()
+const storedCatalog = computed(() => catalogStore.catalog)
 
 const $useAxios = useAxios()
-const catalog: Ref<Catalog> = ref({})
+const catalog: Ref<Comic[]> = ref([])
 const isLoading: Ref<boolean> = ref(false)
 const searchText: Ref<string> = ref('')
 const searchCharacter: Ref<string> = ref('')
@@ -40,15 +38,18 @@ const currentPage: Ref<number> = ref(1)
 }>()
 
 onMounted( () => {
-  clearSearch()
+  currentPage.value = 1
+  getCatalog()
 })
+
+const isFiltered = computed(() => Boolean(searchText.value || searchCharacter.value))
 
 const clearSearch = () => {
   searchText.value = ''
   searchCharacter.value = ''
   emit('clear-search')
   currentPage.value = 1
-  getCatalog()
+  // getCatalog()
 }
 
 const handleGetNextPage = () => {
@@ -58,38 +59,60 @@ const handleGetNextPage = () => {
 
 const getCatalog = async () => {
   isLoading.value = true
+
+  // Devuelve catalogo del Store solo para pagina 1, resto de paginas hace la peticion y añade mas items a la lista
+  if (storedCatalog.value?.length && currentPage.value === 1) {
+    catalog.value = storedCatalog.value
+    isLoading.value = false
+    return
+  }
+
   const url = "/v1/public/comics"
   const limit = 10
   const offset = (currentPage.value - 1) * limit
   const res = await $useAxios(url, { params: { limit, offset, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
-  const result = res?.data?.data ?? {} 
-  if (currentPage.value === 1) catalog.value = result
+  const result = res?.data?.data
+  if (currentPage.value === 1) catalog.value = result?.results ?? []
   else {
-    const currentComics = catalog.value.results as Comic[]
-    catalog.value.results = [...currentComics, ...result.results]
+    const currentComics = catalog.value as Comic[]
+    catalog.value = [...currentComics, ...result.results]
   }
+  catalogStore.catalog = catalog.value
   isLoading.value = false
 }
 
-const getFilteredCatalog = async (title: string, character: number = 0) => {
+const getFilteredCatalog = async (title: string, character: string|number = '') => {
+  console.log("FILTERED with", title, character);
+  
+  searchText.value = ''
+  searchCharacter.value = ''
+  catalogStore.catalog = []
+  currentPage.value = 1
   if (!title && !character) {
-    currentPage.value = 1
     getCatalog()
     return
   }
-  const params: ComicsParams = { limit: 10 }
-  if (title) params.titleStartsWith = title
-  if (character) params.characters = character
+  const params: ComicsParams = { limit: 20 }
+  if (title) {
+    params.titleStartsWith = title
+    searchText.value = title
+  }
+  if (character) {
+    params.characters = character
+    searchCharacter.value = String(character)
+  }
   isLoading.value = true
   const url = "/v1/public/comics"
   const res = await $useAxios(url, { params }) 
-  const result = res?.data?.data ?? {} 
-  catalog.value = result
+  const result = res?.data?.data 
+  catalog.value = result?.results ?? []
   isLoading.value = false
+  catalogStore.catalog = catalog.value
 }
 
 defineExpose({
-  getFilteredCatalog
+  getFilteredCatalog,
+  clearSearch
 })
 
 </script>
