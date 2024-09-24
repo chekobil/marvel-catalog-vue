@@ -48,22 +48,22 @@ const clearSearch = () => {
   searchCharacter.value = ''
   emit('clear-search')
   currentPage.value = 1
-  getCatalog(1)
+  getCatalog()
 }
 
 const handleGetNextPage = () => {
   currentPage.value ++
-  getCatalog(currentPage.value)
+  getCatalog()
 }
 
-const getCatalog = async (page: number) => {
+const getCatalog = async () => {
   isLoading.value = true
   const url = "/v1/public/comics"
   const limit = 10
   const offset = (currentPage.value - 1) * limit
   const res = await $useAxios(url, { params: { limit, offset, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
   const result = res?.data?.data ?? {} 
-  if (page === 1) catalog.value = result
+  if (currentPage.value === 1) catalog.value = result
   else {
     const currentComics = catalog.value.results as Comic[]
     catalog.value.results = [...currentComics, ...result.results]
@@ -74,7 +74,7 @@ const getCatalog = async (page: number) => {
 const getFilteredCatalog = async (title: string, character: number = 0) => {
   if (!title && !character) {
     currentPage.value = 1
-    getCatalog(1)
+    getCatalog()
     return
   }
   const params: ComicsParams = { limit: 10 }

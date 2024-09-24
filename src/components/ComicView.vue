@@ -44,8 +44,6 @@ const handleGoToMarvelPage = () => {
 }
 
 const comicImage = computed(() => {
-    console.log(comic.value.images?.length, comic.value.images);
-    
     if (!comic.value.images?.length) return ''
     return `${comic.value.images[0].path}.${comic.value.images[0].extension}`
 })
