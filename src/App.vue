@@ -25,24 +25,19 @@ const handleClearSearch = () => {
 </script>
 
 <template>
-  <button @click="handleGoTo('/')">inicio</button>
-  <ComicSearch ref="searchElement" @change="handleChangeSearch"/>
-  <RouterView v-slot="{ Component }">
-    <component ref="viewElement" :is="Component" @clear-search="handleClearSearch" />
-  </RouterView>
-
+  <main>
+    <button @click="handleGoTo('/')">inicio</button>
+    <ComicSearch ref="searchElement" @change="handleChangeSearch"/>
+    <RouterView v-slot="{ Component }">
+      <component ref="viewElement" :is="Component" @clear-search="handleClearSearch" />
+    </RouterView>
+  </main>
 </template>
 
 <style lang="scss">
-.catalog-container {
+main {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  &::after {
-      content: '';
-      flex: auto;
-    }
+  flex-direction: column;
+  gap: 2rem;
 }
 </style>
