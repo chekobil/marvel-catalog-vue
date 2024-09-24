@@ -2,11 +2,11 @@
   <div v-if="isLoading" class="catalog-results">
     Loading ...
   </div>
-  <div v-else-if="catalog.count === 0" class="catalog-results">
+  <div v-else-if="catalog.results?.length === 0" class="catalog-results">
     Catalog has no items with this criteria
   </div>
   <div v-else  class="catalog-results">
-    Catalog has {{ catalog.count }} items
+    Catalog has {{ catalog.results?.length }} items
     <span v-if="searchText">filtered by "{{ searchText }}"
       <button @click="clearSearch">Clear</button>
     </span>
@@ -16,7 +16,10 @@
   </div>
   <div class="catalog-container">
       <ComicCard v-for="comic in catalog.results" :key="comic.id" :comic />
-    </div>
+  </div>
+  <div class="catalog-container">
+  <sl-button @click="handleGetNextPage">Load more ...</sl-button>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +33,7 @@ const catalog: Ref<Catalog> = ref({})
 const isLoading: Ref<boolean> = ref(false)
 const searchText: Ref<string> = ref('')
 const searchCharacter: Ref<string> = ref('')
+const currentPage: Ref<number> = ref(1)
 
   const emit = defineEmits<{
   (e: 'clear-search'): void
@@ -43,21 +47,34 @@ const clearSearch = () => {
   searchText.value = ''
   searchCharacter.value = ''
   emit('clear-search')
-  getCatalog()
+  currentPage.value = 1
+  getCatalog(1)
 }
 
-const getCatalog = async () => {
+const handleGetNextPage = () => {
+  currentPage.value ++
+  getCatalog(currentPage.value)
+}
+
+const getCatalog = async (page: number) => {
   isLoading.value = true
   const url = "/v1/public/comics"
-  const res = await $useAxios(url, { params: { limit:10, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
+  const limit = 10
+  const offset = (currentPage.value - 1) * limit
+  const res = await $useAxios(url, { params: { limit, offset, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
   const result = res?.data?.data ?? {} 
-  catalog.value = result
+  if (page === 1) catalog.value = result
+  else {
+    const currentComics = catalog.value.results as Comic[]
+    catalog.value.results = [...currentComics, ...result.results]
+  }
   isLoading.value = false
 }
 
 const getFilteredCatalog = async (title: string, character: number = 0) => {
   if (!title && !character) {
-    getCatalog()
+    currentPage.value = 1
+    getCatalog(1)
     return
   }
   const params: ComicsParams = { limit: 10 }
@@ -90,6 +107,7 @@ defineExpose({
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   justify-items: center;
+  align-items: flex-end;
   gap: 3rem 2rem;
 }
 </style>
