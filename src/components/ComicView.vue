@@ -5,6 +5,8 @@
         </div>
         <div class="comic-detail-content">
         <b>{{ comic.title }}</b>
+        <br>
+        <br>
         <div v-if="comic.description">{{ comic.description }}</div>
 
         <div v-if="comic.characters?.items?.length">

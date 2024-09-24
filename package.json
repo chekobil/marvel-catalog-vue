@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@shoelace-style/shoelace": "^2.17.1",
     "axios": "^1.7.7",
     "miragejs": "0.2.0-alpha.3",
     "vue": "^3.4.37",

@@ -36,7 +36,7 @@ const searchCharacter: Ref<string> = ref('')
 }>()
 
 onMounted( () => {
-  getCatalog()
+  clearSearch()
 })
 
 const clearSearch = () => {
@@ -55,16 +55,14 @@ const getCatalog = async () => {
   isLoading.value = false
 }
 
-const getFilteredCatalog = async (title: string, character: CharacterValue = {}) => {
+const getFilteredCatalog = async (title: string, character: number = 0) => {
   if (!title && !character) {
     getCatalog()
     return
   }
-  searchText.value = title
-  searchCharacter.value = character?.name ?? ''
   const params: ComicsParams = { limit: 10 }
   if (title) params.titleStartsWith = title
-  if (character) params.characters = character.id
+  if (character) params.characters = character
   const url = "/v1/public/comics"
   const res = await $useAxios(url, { params }) 
   const result = res?.data?.data ?? {} 
