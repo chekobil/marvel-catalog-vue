@@ -79,6 +79,11 @@ defineExpose({
 
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.catalog-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  justify-items: center;
+  gap: 3rem 2rem;
+}
 </style>

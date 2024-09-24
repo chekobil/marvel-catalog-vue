@@ -70,16 +70,23 @@ const getComicDetails = async () => {
 <style scoped>
 .comic-detail-container {
     display: flex;
+    justify-content: space-around;
     gap: 2rem;
     .comic-detail-image {
-        width: 430px;
+        width: min(400px, 80%);
         img {
             max-width: 100%;
             height: auto;
         }
     }
     .comic-detail-content {
+        max-width: 660px;
         flex: 1;
     }
+    @media (max-width: 800px) {
+        flex-direction: column;
+        align-items: center;
+    }
+
 }
 </style>

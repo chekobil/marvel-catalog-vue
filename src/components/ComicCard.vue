@@ -27,7 +27,7 @@ const handleNavigateToComic = () => {
 
 <style lang="scss">
 .comic-card-container {
-  width: 12rem;
+  width: min(290px, 80%);
   height: 100%;
   display: flex;
   flex-direction: column;
