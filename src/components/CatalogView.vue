@@ -38,6 +38,7 @@ const currentPage: Ref<number> = ref(1)
 }>()
 
 onMounted( () => {
+  ([searchText.value, searchCharacter.value] = catalogStore.filter)
   currentPage.value = 1
   getCatalog()
 })
@@ -49,7 +50,6 @@ const clearSearch = () => {
   searchCharacter.value = ''
   emit('clear-search')
   currentPage.value = 1
-  // getCatalog()
 }
 
 const handleGetNextPage = () => {
@@ -78,6 +78,7 @@ const getCatalog = async () => {
     catalog.value = [...currentComics, ...result.results]
   }
   catalogStore.catalog = catalog.value
+  catalogStore.filter = ['', '']
   isLoading.value = false
 }
 
@@ -87,6 +88,7 @@ const getFilteredCatalog = async (title: string, character: string|number = '') 
   searchText.value = ''
   searchCharacter.value = ''
   catalogStore.catalog = []
+  catalogStore.filter = ['', '']
   currentPage.value = 1
   if (!title && !character) {
     getCatalog()
@@ -96,10 +98,12 @@ const getFilteredCatalog = async (title: string, character: string|number = '') 
   if (title) {
     params.titleStartsWith = title
     searchText.value = title
+    catalogStore.filter = [title, '']
   }
   if (character) {
     params.characters = character
     searchCharacter.value = String(character)
+    catalogStore.filter = [title, String(character)]
   }
   isLoading.value = true
   const url = "/v1/public/comics"
