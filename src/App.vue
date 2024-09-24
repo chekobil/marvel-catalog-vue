@@ -12,9 +12,9 @@ const handleGoTo = (path: string) => {
   router.push({path, replace: true})
 }
 
-const handleChangeText = (text: string) => {
+const handleChangeSearch = ({text, character}: CharacterEmitData) => {
   if (viewElement.value && typeof viewElement.value.getFilteredCatalog === 'function') {
-    viewElement.value.getFilteredCatalog(text)
+    viewElement.value.getFilteredCatalog(text ?? '', character ?? {})
   }
 }
 
@@ -26,7 +26,7 @@ const handleClearSearch = () => {
 
 <template>
   <button @click="handleGoTo('/')">inicio</button>
-  <ComicSearch ref="searchElement" @change="handleChangeText"/>
+  <ComicSearch ref="searchElement" @change="handleChangeSearch"/>
   <RouterView v-slot="{ Component }">
     <component ref="viewElement" :is="Component" @clear-search="handleClearSearch" />
   </RouterView>
@@ -37,8 +37,12 @@ const handleClearSearch = () => {
 .catalog-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  &::after {
+      content: '';
+      flex: auto;
+    }
 }
 </style>

@@ -14,7 +14,8 @@ comic: Comic
 }>()
 const thumbnailUrl = computed( () => {
   if (!props.comic) return ''
-  return `${props.comic.images[0].path}/portrait_incredible.${props.comic.images[0].extension}`
+  const validImage = props.comic.images[0] ?? props.comic.thumbnail
+  return `${validImage.path}/portrait_incredible.${validImage.extension}`
 })
 
 const handleNavigateToComic = () => {

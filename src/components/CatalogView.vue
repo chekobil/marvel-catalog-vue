@@ -3,11 +3,14 @@
     Loading ...
   </div>
   <div v-else-if="catalog.count === 0">
-    Catalog has no items
+    Catalog has no items with this criteria
   </div>
   <div v-else>
     Catalog has {{ catalog.count }} items
     <span v-if="searchText">filtered by "{{ searchText }}"
+      <button @click="clearSearch">Clear</button>
+    </span>
+    <span v-if="searchCharacter">filtered by "{{ searchCharacter }}"
       <button @click="clearSearch">Clear</button>
     </span>
     <div class="catalog-container">
@@ -26,6 +29,7 @@ const $useAxios = useAxios()
 const catalog: Ref<Catalog> = ref({})
 const isLoading: Ref<boolean> = ref(false)
 const searchText: Ref<string> = ref('')
+const searchCharacter: Ref<string> = ref('')
 
   const emit = defineEmits<{
   (e: 'clear-search'): void
@@ -37,6 +41,7 @@ onMounted( () => {
 
 const clearSearch = () => {
   searchText.value = ''
+  searchCharacter.value = ''
   emit('clear-search')
   getCatalog()
 }
@@ -50,14 +55,18 @@ const getCatalog = async () => {
   isLoading.value = false
 }
 
-const getFilteredCatalog = async (text: string) => {
-  if (!text) {
+const getFilteredCatalog = async (title: string, character: CharacterValue = {}) => {
+  if (!title && !character) {
     getCatalog()
     return
   }
-  searchText.value = text
+  searchText.value = title
+  searchCharacter.value = character?.name ?? ''
+  const params: ComicsParams = { limit: 10 }
+  if (title) params.titleStartsWith = title
+  if (character) params.characters = character.id
   const url = "/v1/public/comics"
-  const res = await $useAxios(url, { params: { limit: 10, titleStartsWith: text }}) 
+  const res = await $useAxios(url, { params }) 
   const result = res?.data?.data ?? {} 
   isLoading.value = true
   catalog.value = result

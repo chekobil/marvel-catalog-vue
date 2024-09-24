@@ -7,6 +7,59 @@ declare global {
         results?: Comic[];
       }
       
+      interface CharacterCatalog {
+        offset?: number;
+        limit?: number;
+        total?: number;
+        count?: number;
+        results?: Character[];
+      }
+
+      interface CharacterEmitData {
+        text: string, character: CharacterValue
+      }
+      
+      interface CharacterValue {
+        id?: number, name?: string
+      }
+
+      interface Character {
+        id: number;
+        name: string;
+        description: string;
+        modified: string;
+        thumbnail: Thumbnail;
+        resourceURI: string;
+        comics: Comics;
+        series: Comics;
+        stories: Comics;
+        events: Comics;
+        urls: Url[];
+      }
+      
+      interface Thumbnail {
+        path: string;
+        extension: string;
+      }
+      
+      interface ComicsParams {
+        limit?: number;
+        titleStartsWith?: string;
+        characters?: number | string
+      }
+
+      interface Comics {
+        available: number;
+        collectionURI: string;
+        items: any[]; // We don't know the exact structure of the items yet
+        returned: number;
+      }
+      
+      interface Url {
+        type: string;
+        url: string;
+      }
+
       interface EmptyComic {
         id?: number;
         title?: string;
@@ -104,9 +157,9 @@ declare global {
       }
       
       interface Characters {
-        available: number;
-        collectionURI: string;
-        items: any[];
+        available?: number;
+        collectionURI?: string;
+        items?: any[];
       }
       
       interface Story {
