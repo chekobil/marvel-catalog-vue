@@ -1,5 +1,9 @@
 <template>
-    <div class="comic-detail-container">
+    <div v-if="isError">
+        Some error ocurred <br>
+        <b v-if="errorMessage"> {{ errorMessage }}</b>
+    </div>
+    <div v-else class="comic-detail-container">
         <div class="comic-detail-image">
             <img :src="comicImage" alt="">
         </div>
@@ -38,6 +42,8 @@ const route = useRoute()
 const $useAxios = useAxios()
 const comic: Ref<Comic|EmptyComic> = ref({})
 const isLoading: Ref<boolean> = ref(false)
+const isError: Ref<boolean> = ref(false)
+const errorMessage: Ref<string> = ref('')
 
 const handleGoToMarvelPage = () => {
     window.open(detailUrl.value, '_blank');
@@ -62,8 +68,15 @@ onMounted( async () => {
 
 const getComicDetails = async () => {
   const url = `/v1/public/comics/${route.params.id}`
-  const res = await $useAxios(url) 
-  return res?.data?.data.results[0]
+  try {
+    const res = await $useAxios(url) 
+    return res?.data?.data.results[0]
+  } catch(err: any) {
+    if (err.status === 404) {
+        errorMessage.value = err.response.data.status ?? ''
+    }
+    isError.value = true
+  }
 }
 </script>
 
