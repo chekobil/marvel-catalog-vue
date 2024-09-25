@@ -6,6 +6,7 @@ import ComicView from '../components/ComicView.vue'
 const routes = [
   { path: '/', component: CatalogView },
   { path: '/comic/:id', component: ComicView },
+  { path: '/:pathMatch(.*)*', component: CatalogView },
 ]
 
 const router = createRouter({
