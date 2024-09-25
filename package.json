@@ -8,6 +8,7 @@
     "dev:rm": "rm -rf node_modules/.vite && vite",
     "dev:test": "vite --mode test",
     "build": "vue-tsc -b && vite build",
+    "postbuild": "bash ./scripts/postbuild.sh",
     "preview": "vite preview"
   },
   "dependencies": {
