@@ -6,4 +6,5 @@ DESTINATION2="dist/200.html" # for surge.sh
 if [ -f "$SOURCE" ]; then
     cp "$SOURCE" "$DESTINATION"
     cp "$SOURCE" "$DESTINATION2"
+    echo "postbuild script"
 fi
