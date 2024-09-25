@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import useAxios from '../composables/useAxios'
 import ComicCard from '../components/ComicCard.vue';
@@ -25,6 +25,7 @@ import { useCatalogStore } from '../stores/store'
 
 const catalogStore = useCatalogStore()
 const storedCatalog = computed(() => catalogStore.catalog)
+const storedCurrentPage = computed(() => catalogStore.currentPage)
 
 const $useAxios = useAxios()
 const catalog: Ref<Comic[]> = ref([])
@@ -39,9 +40,20 @@ const currentPage: Ref<number> = ref(1)
 
 onMounted( () => {
   ([searchText.value, searchCharacter.value] = catalogStore.filter)
-  currentPage.value = 1
+  currentPage.value = catalogStore.currentPage
   getCatalog()
 })
+
+watch(currentPage, (val: number) => {
+  if (catalogStore.currentPage === val) return
+  console.log("CAMBIA INTERNAL page", val);
+  catalogStore.currentPage = val
+})
+watch(storedCurrentPage, (val: number) => {
+  if (currentPage.value === val) return
+  console.log("CAMBIA STORE page", val);
+  currentPage.value = val
+}, {immediate: true})
 
 const isFiltered = computed(() => Boolean(searchText.value || searchCharacter.value))
 
@@ -59,24 +71,23 @@ const handleGetNextPage = () => {
 
 const getCatalog = async () => {
   isLoading.value = true
+  const limit = 10
+  const offset = (currentPage.value - 1) * limit
 
   // Devuelve catalogo del Store solo para pagina 1, resto de paginas hace la peticion y añade mas items a la lista
-  if (storedCatalog.value?.length && currentPage.value === 1) {
+  if (storedCatalog.value?.length === currentPage.value * limit) {
     catalog.value = storedCatalog.value
     isLoading.value = false
     return
   }
 
+  console.log("GET PAGE", currentPage.value);
+  
   const url = "/v1/public/comics"
-  const limit = 10
-  const offset = (currentPage.value - 1) * limit
   const res = await $useAxios(url, { params: { limit, offset, orderBy: '-onsaleDate', formatType: 'comic', dateDescriptor: 'thisMonth' } }) 
   const result = res?.data?.data
-  if (currentPage.value === 1) catalog.value = result?.results ?? []
-  else {
     const currentComics = catalog.value as Comic[]
     catalog.value = [...currentComics, ...result.results]
-  }
   catalogStore.catalog = catalog.value
   catalogStore.filter = ['', '']
   isLoading.value = false
@@ -89,6 +100,7 @@ const getFilteredCatalog = async (title: string, character: string|number = '') 
   searchCharacter.value = ''
   catalogStore.catalog = []
   catalogStore.filter = ['', '']
+  catalogStore.currentPage = 1
   currentPage.value = 1
   if (!title && !character) {
     getCatalog()
